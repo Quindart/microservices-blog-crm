@@ -1,0 +1,2 @@
+allowBuilds:
+  '@clerk/shared': true

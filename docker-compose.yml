@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  # DB Service A (Author/User) - Port 5431
+  db-author:
+    image: postgres:15-alpine
+    container_name: postgres_author
+    environment:
+      POSTGRES_USER: user_a
+      POSTGRES_PASSWORD: password_a
+      POSTGRES_DB: author_db
+    ports:
+      - "5434:5432"
+    volumes:
+      - author_data:/var/lib/postgresql/data
+
+  # DB Service B (CRM) - Port 5432
+  db-crm:
+    image: postgres:15-alpine
+    container_name: postgres_crm
+    environment:
+      POSTGRES_USER: user_b
+      POSTGRES_PASSWORD: password_b
+      POSTGRES_DB: crm_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - crm_data:/var/lib/postgresql/data
+
+volumes:
+  author_data:
+  crm_data:

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"golang-crm/internal/adapters/http/dto"
 	input "golang-crm/internal/application/ports/in"
 	"golang-crm/internal/domain/customer"
 
@@ -62,34 +63,17 @@ func health(c *echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]string{"status": "ok"})
 }
 
-type customerResponse struct {
-	ID    string `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
-	City  string `json:"city"`
-}
-
 func (s *Server) list(c *echo.Context) error {
 	customers, err := s.customers.List(c.Request().Context())
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "could not list customers"})
 	}
 
-	response := make([]customerResponse, len(customers))
-	for i, item := range customers {
-		response[i] = customerResponse{ID: item.ID, Name: item.Name, Email: item.Email, City: item.City}
-	}
-	return c.JSON(http.StatusOK, response)
-}
-
-type customerRequest struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
-	City  string `json:"city"`
+	return c.JSON(http.StatusOK, dto.NewCustomerResponses(customers))
 }
 
 func (s *Server) create(c *echo.Context) error {
-	var req customerRequest
+	var req dto.CreateCustomerRequest
 	if err := c.Bind(&req); err != nil || req.Name == "" || req.Email == "" {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "name and email are required"})
 	}
@@ -113,7 +97,7 @@ func (s *Server) getByID(c *echo.Context) error {
 }
 
 func (s *Server) update(c *echo.Context) error {
-	var req customerRequest
+	var req dto.UpdateCustomerRequest
 	if err := c.Bind(&req); err != nil || req.Name == "" || req.Email == "" {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "name and email are required"})
 	}

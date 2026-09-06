@@ -34,32 +34,35 @@ func (r CustomerRepository) List(ctx context.Context) ([]customer.Customer, erro
 	return out, nil
 }
 
-func (r CustomerRepository) GetByID(ctx context.Context, id string) (*customer.Customer, error) {
+func (r CustomerRepository) GetByID(ctx context.Context, id string) (customer.Customer, error) {
 	var row customerModel
 	result := r.db.WithContext(ctx).First(&row, "id = ?", id)
 	if result.Error != nil {
-		return nil, result.Error
+		if result.Error == gorm.ErrRecordNotFound {
+			return customer.Customer{}, customer.ErrNotFound
+		}
+		return customer.Customer{}, result.Error
 	}
 	item := customer.Customer{ID: row.ID, Name: row.Name, Email: row.Email, City: row.City}
-	return &item, nil
+	return item, nil
 }
 
-func (r CustomerRepository) Create(ctx context.Context, item customer.Customer) (*customer.Customer, error) {
+func (r CustomerRepository) Create(ctx context.Context, item customer.Customer) (customer.Customer, error) {
 	row := customerModel{ID: item.ID, Name: item.Name, Email: item.Email, City: item.City}
 	if err := r.db.WithContext(ctx).Create(&row).Error; err != nil {
-		return nil, err
+		return customer.Customer{}, err
 	}
-	return &item, nil
+	return item, nil
 }
 
-func (r CustomerRepository) Update(ctx context.Context, item customer.Customer) (*customer.Customer, error) {
+func (r CustomerRepository) Update(ctx context.Context, item customer.Customer) (customer.Customer, error) {
 	result := r.db.WithContext(ctx).Model(&customerModel{}).Where("id = ?", item.ID).
 		Updates(map[string]interface{}{"name": item.Name, "email": item.Email, "city": item.City})
 	if result.Error != nil {
-		return nil, result.Error
+		return customer.Customer{}, result.Error
 	}
 	if result.RowsAffected == 0 {
-		return nil, gorm.ErrRecordNotFound
+		return customer.Customer{}, customer.ErrNotFound
 	}
 	return r.GetByID(ctx, item.ID)
 }
@@ -70,7 +73,7 @@ func (r CustomerRepository) Delete(ctx context.Context, id string) error {
 		return result.Error
 	}
 	if result.RowsAffected == 0 {
-		return gorm.ErrRecordNotFound
+		return customer.ErrNotFound
 	}
 	return nil
 }

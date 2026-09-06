@@ -3,7 +3,7 @@ package main
 import (
 	"golang-crm/internal/adapters/http"
 	"golang-crm/internal/adapters/postgres"
-	"golang-crm/internal/application/usecase"
+	"golang-crm/internal/application/service"
 	"golang-crm/internal/config"
 	"log"
 )
@@ -22,7 +22,7 @@ func main() {
 	}
 	defer postgres.CloseDatabase(db)
 
-	server := http.NewServer(cfg.Port, usecase.NewCustomerCRUD(postgres.NewCustomerRepository(db)))
+	server := http.NewServer(cfg.Port, service.NewCustomerService(postgres.NewCustomerRepository(db)))
 
 	log.Printf("CRM API listening on :%s", cfg.Port)
 	if err := server.Start(); err != nil {

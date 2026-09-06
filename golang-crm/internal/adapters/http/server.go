@@ -1,8 +1,6 @@
 package http
 
 import (
-	"crypto/rand"
-	"encoding/hex"
 	"errors"
 	"net/http"
 	"os"
@@ -12,15 +10,14 @@ import (
 
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
-	"gorm.io/gorm"
 )
 
 type Server struct {
 	port      string
-	customers input.CustomerCRUD
+	customers input.CustomerService
 }
 
-func NewServer(port string, customers input.CustomerCRUD) *Server {
+func NewServer(port string, customers input.CustomerService) *Server {
 	return &Server{port: port, customers: customers}
 }
 
@@ -96,7 +93,7 @@ func (s *Server) create(c *echo.Context) error {
 	if err := c.Bind(&req); err != nil || req.Name == "" || req.Email == "" {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "name and email are required"})
 	}
-	item := customer.Customer{ID: newUUID(), Name: req.Name, Email: req.Email, City: req.City}
+	item := customer.New(req.Name, req.Email, req.City)
 	created, err := s.customers.Create(c.Request().Context(), item)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "could not create customer"})
@@ -106,7 +103,7 @@ func (s *Server) create(c *echo.Context) error {
 
 func (s *Server) getByID(c *echo.Context) error {
 	item, err := s.customers.GetByID(c.Request().Context(), c.Param("id"))
-	if errors.Is(err, gorm.ErrRecordNotFound) {
+	if errors.Is(err, customer.ErrNotFound) {
 		return c.JSON(http.StatusNotFound, map[string]string{"error": "customer not found"})
 	}
 	if err != nil {
@@ -121,7 +118,7 @@ func (s *Server) update(c *echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "name and email are required"})
 	}
 	item, err := s.customers.Update(c.Request().Context(), customer.Customer{ID: c.Param("id"), Name: req.Name, Email: req.Email, City: req.City})
-	if errors.Is(err, gorm.ErrRecordNotFound) {
+	if errors.Is(err, customer.ErrNotFound) {
 		return c.JSON(http.StatusNotFound, map[string]string{"error": "customer not found"})
 	}
 	if err != nil {
@@ -132,19 +129,11 @@ func (s *Server) update(c *echo.Context) error {
 
 func (s *Server) delete(c *echo.Context) error {
 	err := s.customers.Delete(c.Request().Context(), c.Param("id"))
-	if errors.Is(err, gorm.ErrRecordNotFound) {
+	if errors.Is(err, customer.ErrNotFound) {
 		return c.JSON(http.StatusNotFound, map[string]string{"error": "customer not found"})
 	}
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "could not delete customer"})
 	}
 	return c.NoContent(http.StatusNoContent)
-}
-
-func newUUID() string {
-	b := make([]byte, 16)
-	_, _ = rand.Read(b)
-	b[6] = (b[6] & 0x0f) | 0x40
-	b[8] = (b[8] & 0x3f) | 0x80
-	return hex.EncodeToString(b[:4]) + "-" + hex.EncodeToString(b[4:6]) + "-" + hex.EncodeToString(b[6:8]) + "-" + hex.EncodeToString(b[8:10]) + "-" + hex.EncodeToString(b[10:])
 }

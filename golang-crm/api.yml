@@ -1,0 +1,38 @@
+openapi: 3.0.3
+info: {title: CRM Service API, description: Customer CRUD API., version: 1.0.0}
+servers: [{url: http://localhost:8080}]
+paths:
+  /api/v1/customers:
+    get:
+      summary: List customers
+      operationId: listCustomers
+      responses: {'200': {description: Success}, '500': {$ref: '#/components/responses/ServerError'}}
+    post:
+      summary: Create customer
+      operationId: createCustomer
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/CustomerRequest'}}}}
+      responses: {'201': {description: Created, content: {application/json: {schema: {$ref: '#/components/schemas/Customer'}}}}, '400': {$ref: '#/components/responses/BadRequest'}, '500': {$ref: '#/components/responses/ServerError'}}
+  /api/v1/customers/{id}:
+    parameters: [{name: id, in: path, required: true, schema: {type: string, format: uuid}}]
+    get:
+      summary: Get customer by ID
+      operationId: getCustomerByID
+      responses: {'200': {description: Success, content: {application/json: {schema: {$ref: '#/components/schemas/Customer'}}}}, '404': {$ref: '#/components/responses/NotFound'}, '500': {$ref: '#/components/responses/ServerError'}}
+    put:
+      summary: Update customer by ID
+      operationId: updateCustomer
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/CustomerRequest'}}}}
+      responses: {'200': {description: Updated, content: {application/json: {schema: {$ref: '#/components/schemas/Customer'}}}}, '400': {$ref: '#/components/responses/BadRequest'}, '404': {$ref: '#/components/responses/NotFound'}, '500': {$ref: '#/components/responses/ServerError'}}
+    delete:
+      summary: Delete customer by ID
+      operationId: deleteCustomer
+      responses: {'204': {description: Deleted}, '404': {$ref: '#/components/responses/NotFound'}, '500': {$ref: '#/components/responses/ServerError'}}
+components:
+  schemas:
+    Customer: {type: object, required: [id, name, email], properties: {id: {type: string, format: uuid}, name: {type: string}, email: {type: string, format: email}, city: {type: string, nullable: true}}}
+    CustomerRequest: {type: object, required: [name, email], properties: {name: {type: string}, email: {type: string, format: email}, city: {type: string, nullable: true}}}
+    Error: {type: object, required: [error], properties: {error: {type: string}}}
+  responses:
+    BadRequest: {description: Invalid request, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
+    NotFound: {description: Customer not found, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
+    ServerError: {description: Internal server error, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}

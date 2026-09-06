@@ -18,8 +18,13 @@ type Server struct {
 	customers input.CustomerService
 }
 
-func NewServer(port string, customers input.CustomerService) *Server {
-	return &Server{port: port, customers: customers}
+type Dependencies struct {
+	CustomerService input.CustomerService
+	// Add OrderService, UserService, etc. here as the application grows.
+}
+
+func NewServer(port string, dependencies Dependencies) *Server {
+	return &Server{port: port, customers: dependencies.CustomerService}
 }
 
 func (s *Server) Start() error {

@@ -15,6 +15,7 @@ type Container struct {
 }
 
 func New(cfg config.Config) (*Container, error) {
+
 	database, err := postgres.NewDatabase(postgres.Config{
 		Host: cfg.Database.Host, Port: cfg.Database.Port, User: cfg.Database.User,
 		Password: cfg.Database.Password, Name: cfg.Database.Name,
@@ -25,7 +26,9 @@ func New(cfg config.Config) (*Container, error) {
 
 	repository := postgres.NewCustomerRepository(database)
 	customerService := service.NewCustomerService(repository)
-	server := http.NewServer(cfg.Port, customerService)
+	server := http.NewServer(cfg.Port, http.Dependencies{
+		CustomerService: customerService,
+	})
 
 	return &Container{database: database, server: server}, nil
 }

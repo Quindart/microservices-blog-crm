@@ -16,6 +16,8 @@ type Config struct {
 	Name     string
 }
 
+type Database = gorm.DB
+
 func NewDatabase(c Config) (*gorm.DB, error) {
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", c.Host, c.Port, c.User, c.Password, c.Name)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})

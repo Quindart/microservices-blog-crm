@@ -1,10 +1,8 @@
 package main
 
 import (
-	"golang-crm/internal/adapters/http"
-	"golang-crm/internal/adapters/postgres"
-	"golang-crm/internal/application/service"
 	"golang-crm/internal/config"
+	"golang-crm/internal/container"
 	"log"
 )
 
@@ -13,19 +11,14 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	db, err := postgres.NewDatabase(postgres.Config{
-		Host: cfg.Database.Host, Port: cfg.Database.Port, User: cfg.Database.User,
-		Password: cfg.Database.Password, Name: cfg.Database.Name,
-	})
+	app, err := container.New(cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer postgres.CloseDatabase(db)
-
-	server := http.NewServer(cfg.Port, service.NewCustomerService(postgres.NewCustomerRepository(db)))
+	defer app.Close()
 
 	log.Printf("CRM API listening on :%s", cfg.Port)
-	if err := server.Start(); err != nil {
+	if err := app.Start(); err != nil {
 		log.Fatal(err)
 	}
 }

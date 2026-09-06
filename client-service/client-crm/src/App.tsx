@@ -6,6 +6,7 @@ import { Sidebar } from './components/organisms/Sidebar';
 import { AppHeader } from './components/organisms/AppHeader';
 import { DashboardOverview } from './components/organisms/DashboardOverview';
 import { RecordsTable } from './components/organisms/RecordsTable';
+import { CustomersTable } from './components/organisms/CustomersTable';
 import type { Module } from './types';
 import './App.css';
 
@@ -58,6 +59,8 @@ function App({ initialModule = 'Overview' }: { initialModule?: Module }) {
           </div>
           {active === 'Overview' ? (
             <DashboardOverview />
+          ) : active === 'Users' ? (
+            <CustomersTable />
           ) : (
             <RecordsTable
               active={active}

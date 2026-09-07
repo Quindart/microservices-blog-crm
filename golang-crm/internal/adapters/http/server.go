@@ -6,6 +6,7 @@ import (
 	"errors"
 	"net/http"
 	"os"
+	"strconv"
 
 	input "golang-crm/internal/application/ports/in"
 	"golang-crm/internal/domain/customer"
@@ -17,22 +18,37 @@ import (
 
 type Server struct {
 	port      string
-	customers input.CustomerCRUD
+	customers input.CustomerService
+	orders    input.OrderService
+	products  input.ProductService
 }
 
-func NewServer(port string, customers input.CustomerCRUD) *Server {
-	return &Server{port: port, customers: customers}
+func NewServer(port string, customers input.CustomerService, orders input.OrderService, products input.ProductService) *Server {
+	return &Server{port: port, customers: customers, orders: orders, products: products}
 }
 
 func (s *Server) Start() error {
 	e := echo.New()
 	e.Use(middleware.RequestLogger(), middleware.Recover())
 	e.GET("/health", health)
+
 	e.GET("/api/v1/customers", s.list)
 	e.POST("/api/v1/customers", s.create)
 	e.GET("/api/v1/customers/:id", s.getByID)
 	e.PUT("/api/v1/customers/:id", s.update)
 	e.DELETE("/api/v1/customers/:id", s.delete)
+
+	e.GET("/api/v1/orders", s.getOrderByParams)
+	e.GET("/api/v1/orders/:id", s.getOrderByID)
+	e.GET("/api/v1/customers/:customerId/orders", s.getOrdersByCustomer)
+
+	e.GET("/api/v1/products", s.getProducts)
+	e.GET("/api/v1/products/:id", s.getProductByID)
+	e.GET(
+		"/api/v1/customers/:customerId/orders",
+		s.getOrdersByCustomer,
+	)
+
 	e.GET("/swagger.json", func(c *echo.Context) error {
 		return c.Blob(http.StatusOK, "application/json", mustReadSpec("swagger.json"))
 	})
@@ -41,6 +57,56 @@ func (s *Server) Start() error {
 	})
 	e.GET("/docs", swaggerUI)
 	return e.Start(":" + s.port)
+}
+
+func (s *Server) getProducts(c *echo.Context) error {
+	limit, offset, err := pagination(c)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+	}
+	items, err := s.products.GetByParams(c.Request().Context(), limit, offset)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "could not list products"})
+	}
+	return c.JSON(http.StatusOK, items)
+}
+
+func (s *Server) getProductByID(c *echo.Context) error {
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid product id"})
+	}
+	item, err := s.products.GetByID(c.Request().Context(), id)
+	if errors.Is(err, gorm.ErrRecordNotFound) || item == nil {
+		return c.JSON(http.StatusNotFound, map[string]string{"error": "product not found"})
+	}
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "could not get product"})
+	}
+	return c.JSON(http.StatusOK, item)
+}
+
+func (s *Server) getOrderByParams(c *echo.Context) error {
+	limit, offset, err := pagination(c)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+	}
+	items, err := s.orders.GetByParams(c.Request().Context(), limit, offset)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "could not list orders"})
+	}
+	return c.JSON(http.StatusOK, items)
+}
+
+func (s *Server) getOrderByID(c *echo.Context) error {
+	item, err := s.orders.GetByID(c.Request().Context(), c.Param("id"))
+	if errors.Is(err, gorm.ErrRecordNotFound) || item == nil {
+		return c.JSON(http.StatusNotFound, map[string]string{"error": "order not found"})
+	}
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "could not get order"})
+	}
+	return c.JSON(http.StatusOK, item)
 }
 
 func mustReadSpec(name string) []byte {
@@ -73,7 +139,11 @@ type customerResponse struct {
 }
 
 func (s *Server) list(c *echo.Context) error {
-	customers, err := s.customers.List(c.Request().Context())
+	limit, offset, err := pagination(c)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+	}
+	customers, err := s.customers.ListByParams(c.Request().Context(), limit, offset)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "could not list customers"})
 	}
@@ -83,6 +153,24 @@ func (s *Server) list(c *echo.Context) error {
 		response[i] = customerResponse{ID: item.ID, Name: item.Name, Email: item.Email, City: item.City}
 	}
 	return c.JSON(http.StatusOK, response)
+}
+
+func pagination(c *echo.Context) (int, int, error) {
+	limit, offset := 0, 0
+	var err error
+	if value := c.QueryParam("limit"); value != "" {
+		limit, err = strconv.Atoi(value)
+		if err != nil || limit < 1 {
+			return 0, 0, errors.New("limit must be a positive integer")
+		}
+	}
+	if value := c.QueryParam("offset"); value != "" {
+		offset, err = strconv.Atoi(value)
+		if err != nil || offset < 0 {
+			return 0, 0, errors.New("offset must be a non-negative integer")
+		}
+	}
+	return limit, offset, nil
 }
 
 type customerRequest struct {
@@ -139,6 +227,14 @@ func (s *Server) delete(c *echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "could not delete customer"})
 	}
 	return c.NoContent(http.StatusNoContent)
+}
+
+func (s *Server) getOrdersByCustomer(c *echo.Context) error {
+	items, err := s.orders.GetByCustomerID(c.Request().Context(), c.Param("customerId"))
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "could not list customer orders"})
+	}
+	return c.JSON(http.StatusOK, items)
 }
 
 func newUUID() string {

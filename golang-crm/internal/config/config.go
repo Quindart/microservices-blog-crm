@@ -2,15 +2,18 @@ package config
 
 import (
 	"fmt"
-	"github.com/joho/godotenv"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
-type DatabaseConfig struct{ Host, Port, User, Password, Name string }
-type Config struct {
-	Port     string
-	Database DatabaseConfig
-}
+type (
+	DatabaseConfig struct{ Host, Port, User, Password, Name string }
+	Config         struct {
+		Port     string
+		Database DatabaseConfig
+	}
+)
 
 func Load() (Config, error) {
 	_ = godotenv.Load(".env")

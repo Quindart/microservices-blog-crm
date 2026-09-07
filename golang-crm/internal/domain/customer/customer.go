@@ -6,4 +6,3 @@ type Customer struct {
 	Email string `json:"email"`
 	City  string `json:"city"`
 }
-type Repository interface{ List() ([]Customer, error) }

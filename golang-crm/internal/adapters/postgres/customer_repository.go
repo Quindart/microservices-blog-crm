@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+
 	"golang-crm/internal/domain/customer"
 
 	"gorm.io/gorm"
@@ -23,8 +24,19 @@ func NewCustomerRepository(db *gorm.DB) CustomerRepository {
 }
 
 func (r CustomerRepository) List(ctx context.Context) ([]customer.Customer, error) {
+	return r.ListByParams(ctx, 0, 0)
+}
+
+func (r CustomerRepository) ListByParams(ctx context.Context, limit, offset int) ([]customer.Customer, error) {
 	var rows []customerModel
-	if err := r.db.WithContext(ctx).Find(&rows).Error; err != nil {
+	query := r.db.WithContext(ctx).Order("id")
+	if limit > 0 {
+		query = query.Limit(limit)
+	}
+	if offset > 0 {
+		query = query.Offset(offset)
+	}
+	if err := query.Find(&rows).Error; err != nil {
 		return nil, err
 	}
 	out := make([]customer.Customer, len(rows))

@@ -8,6 +8,7 @@ import (
 
 type CustomerRepository interface {
 	List(ctx context.Context) ([]customer.Customer, error)
+	ListByParams(ctx context.Context, limit, offset int) ([]customer.Customer, error)
 	GetByID(ctx context.Context, id string) (*customer.Customer, error)
 	Create(ctx context.Context, item customer.Customer) (*customer.Customer, error)
 	Update(ctx context.Context, item customer.Customer) (*customer.Customer, error)

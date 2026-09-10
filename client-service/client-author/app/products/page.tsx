@@ -1,5 +1,13 @@
 import Link from "next/link";
 import { products } from "@/lib/mock-data";
+import { formatVnd } from "@/lib/utils";
+
+const priceToneClasses = {
+  blue: "text-blue-700",
+  emerald: "text-emerald-700",
+  violet: "text-violet-700",
+  rose: "text-rose-700",
+};
 
 export default function ProductsPage() {
   return (
@@ -7,15 +15,17 @@ export default function ProductsPage() {
       <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="mb-2 text-sm font-medium uppercase tracking-[0.24em] text-slate-500">
-            Shop collection
+            Thư viện website
           </p>
           <h1 className="text-4xl font-semibold tracking-tight text-slate-900">
-            Best products for thoughtful living
+            Website được thiết kế để giúp doanh nghiệp tăng trưởng
           </h1>
         </div>
         <div className="flex items-center gap-3 text-sm text-slate-500">
-          <span className="rounded-full border border-slate-200 bg-white px-3 py-1.5">Filter</span>
-          <span className="rounded-full border border-slate-200 bg-white px-3 py-1.5">Sort</span>
+          <span className="rounded-full border border-slate-200 bg-white px-3 py-1.5">
+            Lọc theo nhu cầu
+          </span>
+          <span className="rounded-full border border-slate-200 bg-white px-3 py-1.5">Sắp xếp</span>
         </div>
       </div>
 
@@ -43,14 +53,28 @@ export default function ProductsPage() {
             </div>
 
             <div className="space-y-4 p-6">
-              <div className="flex items-center justify-between gap-3">
+              <div className="flex flex-col gap-2">
                 <div>
                   <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">
                     {product.category}
                   </p>
                   <h2 className="mt-2 text-xl font-semibold text-slate-900">{product.name}</h2>
                 </div>
-                <span className="text-lg font-semibold text-slate-900">${product.price}</span>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className={`text-lg font-bold ${priceToneClasses[product.priceTone]}`}>
+                    Từ {formatVnd(product.price)}
+                  </span>
+                  {product.comparePrice && (
+                    <>
+                      <span className="text-sm text-slate-400 line-through">
+                        {formatVnd(product.comparePrice)}
+                      </span>
+                      <span className="rounded-full bg-rose-50 px-2 py-1 text-xs font-semibold text-rose-600">
+                        -{product.discountPercent}%
+                      </span>
+                    </>
+                  )}
+                </div>
               </div>
 
               <p className="text-sm leading-6 text-slate-600">{product.description}</p>
@@ -58,10 +82,10 @@ export default function ProductsPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-sm text-slate-500">
                   <span>★ {product.rating}</span>
-                  <span>({product.reviews})</span>
+                  <span>({product.reviews} đánh giá)</span>
                 </div>
                 <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900">
-                  View details →
+                  Xem chi tiết →
                 </span>
               </div>
             </div>

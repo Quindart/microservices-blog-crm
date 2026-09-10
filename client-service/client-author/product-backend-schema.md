@@ -257,11 +257,7 @@ Response cho listing:
       "description": "A premium storefront for luxury campaigns and seasonal launches.",
       "price": { "amount": 390, "currency": "USD" },
       "thumbnailUrl": "https://cdn.example.com/luxury-brand.webp",
-      "features": [
-        "Conversion-first blocks",
-        "High-end product showcase",
-        "Checkout UI ready"
-      ]
+      "features": ["Conversion-first blocks", "High-end product showcase", "Checkout UI ready"]
     }
   ],
   "pagination": {
@@ -462,42 +458,42 @@ Response cho blog detail:
 
 ### Landing page
 
-| Mock field | Backend field |
-|---|---|
-| `slug` | `LandingPage.slug` |
-| `title` | `LandingPage.title` |
-| `category` | `LandingPageCategory.name` |
-| `description` | `LandingPage.description` |
-| `price` | `LandingPage.price` |
-| `features` | `LandingPageFeature.content` |
-| `accent` | Nên thay bằng `thumbnailUrl` hoặc media URL |
+| Mock field    | Backend field                               |
+| ------------- | ------------------------------------------- |
+| `slug`        | `LandingPage.slug`                          |
+| `title`       | `LandingPage.title`                         |
+| `category`    | `LandingPageCategory.name`                  |
+| `description` | `LandingPage.description`                   |
+| `price`       | `LandingPage.price`                         |
+| `features`    | `LandingPageFeature.content`                |
+| `accent`      | Nên thay bằng `thumbnailUrl` hoặc media URL |
 
 ### Blog
 
-| Mock field | Backend field |
-|---|---|
-| `slug` | `BlogPost.slug` |
-| `title` | `BlogPost.title` |
-| `excerpt` | `BlogPost.excerpt` |
-| `content` | `BlogPost.content` |
-| `category` | `BlogCategory.name` |
-| `author` | `BlogAuthor.name` |
-| `publishedAt` | `BlogPost.publishedAt` |
-| `readTime` | `BlogPost.readTime` |
-| `image` | `BlogPost.coverImageUrl` |
-| `tags` | `BlogPostTag` và `BlogTag` |
+| Mock field    | Backend field              |
+| ------------- | -------------------------- |
+| `slug`        | `BlogPost.slug`            |
+| `title`       | `BlogPost.title`           |
+| `excerpt`     | `BlogPost.excerpt`         |
+| `content`     | `BlogPost.content`         |
+| `category`    | `BlogCategory.name`        |
+| `author`      | `BlogAuthor.name`          |
+| `publishedAt` | `BlogPost.publishedAt`     |
+| `readTime`    | `BlogPost.readTime`        |
+| `image`       | `BlogPost.coverImageUrl`   |
+| `tags`        | `BlogPostTag` và `BlogTag` |
 
 Blog hiện tại đang dùng `image` như một key text mockup. Khi kết nối backend nên trả về URL ảnh thật từ storage/CDN.
 
 ### Contact
 
-| Form field | Backend field |
-|---|---|
-| `fullName` | `Contact.fullName` |
-| `email` | `Contact.email` |
-| `phone` | `Contact.phone` |
-| form page | `Contact.source` |
-| message textarea nếu bổ sung | `Contact.message` |
+| Form field                   | Backend field      |
+| ---------------------------- | ------------------ |
+| `fullName`                   | `Contact.fullName` |
+| `email`                      | `Contact.email`    |
+| `phone`                      | `Contact.phone`    |
+| form page                    | `Contact.source`   |
+| message textarea nếu bổ sung | `Contact.message`  |
 
 ## 6. Cart schema
 
@@ -801,22 +797,22 @@ Không nên tin các field `price`, `subtotal` hoặc `total` do frontend gửi 
 
 ## 12. Mapping với UI hiện tại
 
-| UI field hiện tại | Backend field đề xuất |
-|---|---|
-| `id` | `Product.id` hoặc `Product.slug` |
-| `name` | `Product.name` |
-| `category` | `Category` relation |
-| `price` | `ProductVariant.price` |
-| `rating` | `Product.ratingAverage` |
-| `reviews` | `Product.reviewCount` |
-| `description` | `Product.description` |
-| `highlight` | `Product.highlight` |
-| `badge` | `Product.badge` |
-| `colors` | `ProductVariant.colorName` và `colorCode` |
-| `accent` | Nên thay bằng `ProductMedia.url` |
-| cart quantity | `CartItem.quantity` |
-| checkout price | `OrderItem.unitPrice` |
-| shipping | `Order.shippingFee` |
+| UI field hiện tại | Backend field đề xuất                     |
+| ----------------- | ----------------------------------------- |
+| `id`              | `Product.id` hoặc `Product.slug`          |
+| `name`            | `Product.name`                            |
+| `category`        | `Category` relation                       |
+| `price`           | `ProductVariant.price`                    |
+| `rating`          | `Product.ratingAverage`                   |
+| `reviews`         | `Product.reviewCount`                     |
+| `description`     | `Product.description`                     |
+| `highlight`       | `Product.highlight`                       |
+| `badge`           | `Product.badge`                           |
+| `colors`          | `ProductVariant.colorName` và `colorCode` |
+| `accent`          | Nên thay bằng `ProductMedia.url`          |
+| cart quantity     | `CartItem.quantity`                       |
+| checkout price    | `OrderItem.unitPrice`                     |
+| shipping          | `Order.shippingFee`                       |
 
 ## 13. Important implementation notes
 

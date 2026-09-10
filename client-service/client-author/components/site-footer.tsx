@@ -1,14 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { resolveLocale, translations } from "@/lib/translations";
 
 export function SiteFooter() {
-  const searchParams = useSearchParams();
-  const locale = resolveLocale(searchParams.get("lang"));
-  const t = translations[locale];
-
   return (
     <footer className="border-t border-slate-200 bg-white">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.2fr_0.8fr_0.8fr] lg:px-8">
@@ -22,41 +16,35 @@ export function SiteFooter() {
             </div>
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
-                {t.author}
+                Le Minh Quang
               </p>
-              <p className="text-base font-semibold text-slate-900">{t.store}</p>
+              <p className="text-base font-semibold text-slate-900">Studio kỹ thuật số</p>
             </div>
           </div>
-          <p className="max-w-md text-sm leading-6 text-slate-600">{t.footerTagline}</p>
+          <p className="max-w-md text-sm leading-6 text-slate-600">
+            Xây dựng, mua và ra mắt cửa hàng kỹ thuật số với landing page tinh tế, sản phẩm chất
+            lượng và quy trình thanh toán liền mạch.
+          </p>
         </div>
 
         <div>
           <h3 className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
-            {t.explore}
+            Khám phá
           </h3>
           <ul className="space-y-3 text-sm text-slate-600">
             <li>
-              <Link
-                href={"/landing" + (searchParams.toString() ? `?${searchParams.toString()}` : "")}
-                className="transition hover:text-slate-900"
-              >
-                {t.landing}
+              <Link href="/landing" className="transition hover:text-slate-900">
+                Landing page
               </Link>
             </li>
             <li>
-              <Link
-                href={"/products" + (searchParams.toString() ? `?${searchParams.toString()}` : "")}
-                className="transition hover:text-slate-900"
-              >
-                {t.products}
+              <Link href="/products" className="transition hover:text-slate-900">
+                Website
               </Link>
             </li>
             <li>
-              <Link
-                href={"/cart" + (searchParams.toString() ? `?${searchParams.toString()}` : "")}
-                className="transition hover:text-slate-900"
-              >
-                {t.cart}
+              <Link href="/cart" className="transition hover:text-slate-900">
+                Giỏ hàng
               </Link>
             </li>
           </ul>
@@ -64,19 +52,24 @@ export function SiteFooter() {
 
         <div>
           <h3 className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
-            {t.support}
+            Hỗ trợ
           </h3>
           <ul className="space-y-3 text-sm text-slate-600">
-            <li>hello@authorstore.com</li>
-            <li>+1 (555) 901-2244</li>
-            <li>Mon–Sat, 8am–6pm</li>
+            <li>lmqiuhdev@gmail.com</li>
+            <li>
+              <a href="tel:0814111321" className="transition hover:text-slate-900">
+                0814111321
+              </a>
+            </li>
+            <li>Việt Nam</li>
+            <li>Thứ 2–Thứ 7, 8:00–18:00</li>
           </ul>
         </div>
       </div>
       <div className="border-t border-slate-200">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 text-sm text-slate-500 sm:px-6 lg:px-8">
-          <p>© 2026 Author Storefront</p>
-          <p>Made for digital commerce</p>
+          <p>© 2026 Le Minh Quang Studio</p>
+          <p>Thiết kế cho thương mại số</p>
         </div>
       </div>
     </footer>

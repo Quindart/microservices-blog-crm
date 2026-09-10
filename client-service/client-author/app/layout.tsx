@@ -17,34 +17,26 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://authorstore.example.com"),
-  applicationName: "Author Storefront",
+  applicationName: "Cửa hàng Author",
   authors: [{ name: "Author Studio" }],
   creator: "Author Studio",
   publisher: "Author Studio",
   keywords: [
-    "storefront",
-    "landing pages",
-    "digital products",
-    "ecommerce",
-    "checkout",
-    "premium templates",
-    "Next.js storefront",
-    "Author Storefront",
+    "cửa hàng trực tuyến",
+    "landing page",
+    "website gia công phần mềm",
+    "thương mại điện tử",
+    "thanh toán",
+    "mẫu thiết kế cao cấp",
+    "cửa hàng kỹ thuật số",
   ],
   title: {
-    default: "Author Storefront",
-    template: "%s | Author Storefront",
+    default: "Cửa hàng Author",
+    template: "%s | Cửa hàng Author",
   },
   description:
-    "Premium whiteframe storefront for landing pages, digital products, cart flow, and checkout experiences built for modern brands.",
-  alternates: {
-    canonical: "https://authorstore.example.com",
-    languages: {
-      "en-US": "https://authorstore.example.com/?lang=en",
-      "vi-VN": "https://authorstore.example.com/?lang=vi",
-      "sv-SE": "https://authorstore.example.com/?lang=sv",
-    },
-  },
+    "Cửa hàng kỹ thuật số với landing page, sản phẩm số, giỏ hàng và trải nghiệm thanh toán hiện đại.",
+  alternates: { canonical: "https://authorstore.example.com" },
   robots: {
     index: true,
     follow: true,
@@ -58,18 +50,18 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    locale: "en_US",
+    locale: "vi_VN",
     url: "https://authorstore.example.com",
-    title: "Author Storefront",
+    title: "Cửa hàng Author",
     description:
-      "Discover premium landing page templates, curated products, and smooth checkout experiences in a modern whiteframe storefront.",
-    siteName: "Author Storefront",
+      "Khám phá các landing page và giải pháp website được xây dựng để giúp doanh nghiệp tăng trưởng.",
+    siteName: "Cửa hàng Author",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Author Storefront",
+    title: "Cửa hàng Author",
     description:
-      "Modern storefront for premium landing pages, products, and conversion-focused checkout experiences.",
+      "Website giới thiệu các landing page và giải pháp gia công phần mềm cho doanh nghiệp.",
     creator: "@authorstudio",
   },
 };
@@ -80,7 +72,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang="vi" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full bg-slate-50 text-slate-900">
         <div className="flex min-h-screen flex-col">
           <Suspense fallback={<header className="h-20 border-b border-slate-200 bg-white" />}>

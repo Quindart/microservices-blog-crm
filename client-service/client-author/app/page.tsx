@@ -5,7 +5,6 @@ import Link from "next/link";
 import { animated, useSpring } from "@react-spring/web";
 import { motion, type Variants } from "framer-motion";
 import { Suspense } from "react";
-import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useScroll, useTransform } from "framer-motion";
 import { useForm } from "react-hook-form";
@@ -22,27 +21,27 @@ import {
 } from "react-icons/fa6";
 
 const paradigms = [
-  "Fashion brand",
-  "Education platform",
-  "Point of sale",
-  "Financial trading",
-  "Smart home",
+  "Thương hiệu thời trang",
+  "Nền tảng giáo dục",
+  "Bán hàng tại điểm",
+  "Tài chính số",
+  "Nhà thông minh",
 ];
 
 const services = [
   {
     number: "01",
-    title: "Websites",
+    title: "Website",
     text: "Website rõ ràng, có chiều sâu và tạo cảm giác tin cậy ngay từ lần chạm đầu tiên.",
   },
   {
     number: "02",
-    title: "Mobile apps",
+    title: "Ứng dụng di động",
     text: "Ứng dụng di động tối giản, dễ dùng và được thiết kế quanh hành vi thật của người dùng.",
   },
   {
     number: "03",
-    title: "Digital systems",
+    title: "Hệ thống số",
     text: "Hệ thống số linh hoạt cho thương hiệu muốn vận hành nhanh, gọn và nhất quán.",
   },
 ];
@@ -51,7 +50,7 @@ const networkNodes = [
   { name: "Facebook", icon: FaFacebookF, x: "8%", y: "22%", delay: 0 },
   { name: "Instagram", icon: FaInstagram, x: "18%", y: "67%", delay: 0.8 },
   { name: "Threads", icon: FaThreads, x: "34%", y: "11%", delay: 1.6 },
-  { name: "Mail", icon: FaEnvelope, x: "68%", y: "12%", delay: 0.4 },
+  { name: "Email", icon: FaEnvelope, x: "68%", y: "12%", delay: 0.4 },
   { name: "Google", icon: FaGoogle, x: "86%", y: "28%", delay: 1.2 },
   { name: "YouTube", icon: FaYoutube, x: "84%", y: "68%", delay: 2 },
 ];
@@ -222,7 +221,7 @@ function ContactForm() {
         <input
           id="phone"
           type="tel"
-          placeholder="0901 234 567"
+          placeholder="0814111321"
           {...register("phone")}
           className="w-full rounded-2xl border border-black/10 bg-white px-5 py-4 text-sm outline-none transition placeholder:text-black/30 focus:border-[#1d65d6] focus:ring-4 focus:ring-[#1d65d6]/10"
         />
@@ -322,10 +321,6 @@ function SpringCursor() {
 }
 
 function HomeContent() {
-  const searchParams = useSearchParams();
-  const lang = searchParams.get("lang");
-  const suffix = lang ? `?lang=${lang}` : "";
-
   return (
     <main className="overflow-hidden bg-[#f5f5f2] text-[#171717]">
       <SpringCursor />
@@ -339,12 +334,12 @@ function HomeContent() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7 }}
             >
-              <span className="h-px w-8 bg-[#1d65d6]" /> Le Minh Quang · Founder
+              <span className="h-px w-8 bg-[#1d65d6]" /> Le Minh Quang · Nhà sáng lập
             </motion.p>
             <h1 className="max-w-2xl text-5xl font-semibold leading-[0.98] tracking-[-0.075em] sm:text-6xl lg:text-[5.8rem]">
-              <TextReveal delay={0.08}>Digital things,</TextReveal>
+              <TextReveal delay={0.08}>Sản phẩm số,</TextReveal>
               <TextReveal delay={0.18} className="text-[#1d65d6]">
-                made human.
+                gần gũi hơn.
               </TextReveal>
             </h1>
             <motion.p
@@ -391,12 +386,12 @@ function HomeContent() {
               className="object-cover object-center"
             />
             <div className="absolute bottom-5 left-5 rounded-full bg-white/85 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] backdrop-blur-md">
-              Design · Code · Care
+              Thiết kế · Lập trình · Tận tâm
             </div>
           </motion.div>
         </div>
         <div className="mt-16 flex items-center justify-between border-t border-black/10 pt-5 text-xs uppercase tracking-[0.2em] text-black/40">
-          <span>Scroll to explore</span>
+          <span>Cuộn để khám phá</span>
           <span>01 / 04</span>
         </div>
       </section>
@@ -438,7 +433,7 @@ function HomeContent() {
           </Reveal>
           <Reveal className="lg:pt-8">
             <p className="mb-5 text-xs font-semibold uppercase tracking-[0.26em] text-[#1d65d6]">
-              About the studio
+              Về studio
             </p>
             <h2 className="max-w-2xl text-4xl font-semibold leading-[1.05] tracking-[-0.06em] sm:text-6xl">
               <ScrollText>
@@ -455,13 +450,13 @@ function HomeContent() {
                 <strong className="block text-3xl font-semibold tracking-[-0.05em] text-black">
                   2026
                 </strong>
-                <span className="mt-1 block">Founded in Vietnam</span>
+                <span className="mt-1 block">Thành lập tại Việt Nam</span>
               </div>
               <div>
                 <strong className="block text-3xl font-semibold tracking-[-0.05em] text-black">
                   05+
                 </strong>
-                <span className="mt-1 block">Digital paradigms</span>
+                <span className="mt-1 block">Lĩnh vực số</span>
               </div>
             </div>
           </Reveal>
@@ -475,7 +470,7 @@ function HomeContent() {
             <div className="mb-16 flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
               <div>
                 <p className="mb-4 text-xs font-semibold uppercase tracking-[0.26em] text-[#70a6ff]">
-                  What I do
+                  Tôi làm gì
                 </p>
                 <h2 className="max-w-2xl text-4xl font-semibold leading-none tracking-[-0.06em] sm:text-6xl">
                   <ScrollText>
@@ -510,7 +505,7 @@ function HomeContent() {
         <div className="grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr]">
           <Reveal>
             <p className="mb-5 text-xs font-semibold uppercase tracking-[0.26em] text-[#1d65d6]">
-              A few directions
+              Một vài hướng đi
             </p>
             <h2 className="max-w-3xl text-4xl font-semibold leading-[1.02] tracking-[-0.06em] sm:text-7xl">
               <ScrollText>
@@ -538,7 +533,7 @@ function HomeContent() {
         <div className="mx-auto grid max-w-7xl items-end gap-10 lg:grid-cols-[0.9fr_1.1fr]">
           <Reveal className="relative z-10 pb-20 lg:pb-36">
             <p className="mb-5 text-xs font-semibold uppercase tracking-[0.26em] text-[#1d65d6]">
-              Let&apos;s make it real
+              Cùng biến ý tưởng thành hiện thực
             </p>
             <h2 className="max-w-xl text-5xl font-semibold leading-[0.98] tracking-[-0.07em] sm:text-7xl">
               <ScrollText>
@@ -546,7 +541,7 @@ function HomeContent() {
               </ScrollText>
             </h2>
             <Link
-              href={`/products${suffix}`}
+              href="/products"
               className="mt-9 inline-flex rounded-full bg-[#171717] px-6 py-3 text-sm font-medium text-white transition hover:bg-[#1d65d6]"
             >
               Bắt đầu trò chuyện ↗
@@ -570,7 +565,7 @@ function HomeContent() {
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-24">
           <Reveal>
             <p className="mb-5 text-xs font-semibold uppercase tracking-[0.26em] text-[#1d65d6]">
-              Contact
+              Liên hệ
             </p>
             <h2 className="max-w-xl text-4xl font-semibold leading-[1.02] tracking-[-0.06em] sm:text-6xl">
               <ScrollText>
@@ -581,7 +576,12 @@ function HomeContent() {
               Để lại thông tin, mình sẽ phản hồi sớm nhất để cùng lắng nghe và tìm ra hướng đi phù
               hợp cho dự án của bạn.
             </p>
-            <p className="mt-8 text-sm text-black/45">lmqiuhdev@gmail.com</p>
+            <div className="mt-8 space-y-2 text-sm text-black/45">
+              <p>lmqiuhdev@gmail.com</p>
+              <a href="tel:0814111321" className="block hover:text-[#1d65d6]">
+                0814111321
+              </a>
+            </div>
           </Reveal>
           <Reveal className="rounded-[2rem] bg-white p-6 shadow-[0_24px_70px_-40px_rgba(15,23,42,0.35)] sm:p-8">
             <ContactForm />

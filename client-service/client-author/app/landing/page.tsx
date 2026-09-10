@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { landingPages } from "@/lib/mock-data";
+import { formatVnd } from "@/lib/utils";
 
 export default function LandingPageDirectory() {
   return (
@@ -7,17 +8,17 @@ export default function LandingPageDirectory() {
       <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="mb-2 text-sm font-medium uppercase tracking-[0.24em] text-slate-500">
-            Template library
+            Thư viện mẫu
           </p>
           <h1 className="text-4xl font-semibold tracking-tight text-slate-900">
-            Landing pages for every brand story
+            Landing page cho mọi câu chuyện thương hiệu
           </h1>
         </div>
         <Link
           href="/products"
           className="inline-flex items-center justify-center rounded-full border border-slate-200 px-5 py-3 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
         >
-          Browse products
+          Xem các website
         </Link>
       </div>
 
@@ -32,7 +33,7 @@ export default function LandingPageDirectory() {
               <div className="flex h-full flex-col justify-between rounded-[20px] border border-white/20 bg-slate-950/10 p-4 backdrop-blur-sm">
                 <div className="flex items-center justify-between text-xs font-medium uppercase tracking-[0.24em] text-white/75">
                   <span>{page.category}</span>
-                  <span>${page.price}</span>
+                  <span>{formatVnd(page.price)}</span>
                 </div>
                 <div className="space-y-2">
                   <div className="h-3 w-24 rounded-full bg-white/70" />
@@ -62,9 +63,11 @@ export default function LandingPageDirectory() {
               </ul>
 
               <div className="flex items-center justify-between pt-2">
-                <span className="text-sm font-medium text-slate-500">From ${page.price}</span>
+                <span className="text-sm font-medium text-slate-500">
+                  Từ {formatVnd(page.price)}
+                </span>
                 <span className="text-sm font-semibold text-slate-900 group-hover:text-slate-600">
-                  View demo →
+                  Xem bản demo →
                 </span>
               </div>
             </div>

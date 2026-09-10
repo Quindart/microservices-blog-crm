@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { landingPages } from "@/lib/mock-data";
+import { formatVnd } from "@/lib/utils";
 
 export default async function LandingDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -18,7 +19,7 @@ export default async function LandingDetailPage({ params }: { params: Promise<{ 
             <div className="mb-8 flex items-center justify-between gap-4 text-xs font-medium uppercase tracking-[0.24em] text-white/80">
               <span>{item.category}</span>
               <Link href="/landing" className="hover:text-white/100">
-                ← Back to library
+                ← Quay lại thư viện
               </Link>
             </div>
             <div className="space-y-6">
@@ -37,7 +38,7 @@ export default async function LandingDetailPage({ params }: { params: Promise<{ 
           <div className="space-y-6">
             <div>
               <p className="mb-2 text-sm font-medium uppercase tracking-[0.24em] text-slate-500">
-                Template details
+                Chi tiết mẫu
               </p>
               <h1 className="text-4xl font-semibold tracking-tight text-slate-900">{item.title}</h1>
             </div>
@@ -54,15 +55,14 @@ export default async function LandingDetailPage({ params }: { params: Promise<{ 
           </div>
 
           <aside className="rounded-[28px] border border-slate-200 bg-slate-50 p-6">
-            <p className="text-sm font-medium uppercase tracking-[0.2em] text-slate-500">
-              Purchase
-            </p>
+            <p className="text-sm font-medium uppercase tracking-[0.2em] text-slate-500">Mua mẫu</p>
             <div className="mt-4 flex items-baseline gap-2">
-              <span className="text-4xl font-semibold text-slate-900">${item.price}</span>
-              <span className="text-sm text-slate-500">one-time</span>
+              <span className="text-4xl font-semibold text-slate-900">{formatVnd(item.price)}</span>
+              <span className="text-sm text-slate-500">một lần</span>
             </div>
             <p className="mt-4 text-sm leading-6 text-slate-600">
-              Includes the source layout, responsive sections, CTA flow, and product-ready styling.
+              Bao gồm bố cục gốc, các section responsive, luồng CTA và phong cách sẵn sàng cho sản
+              phẩm.
             </p>
 
             <div className="mt-6 space-y-3">
@@ -70,10 +70,10 @@ export default async function LandingDetailPage({ params }: { params: Promise<{ 
                 href="/payment"
                 className="inline-flex w-full items-center justify-center rounded-full bg-slate-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-slate-700"
               >
-                Buy now
+                Mua ngay
               </Link>
               <button className="inline-flex w-full items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
-                Add to cart
+                Thêm vào giỏ
               </button>
             </div>
           </aside>

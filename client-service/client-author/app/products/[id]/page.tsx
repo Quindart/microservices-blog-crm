@@ -1,7 +1,15 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { products } from "@/lib/mock-data";
-import { AddToCartButton } from "@/components/add-to-cart-button";
+import { ProductActions } from "@/components/product-actions";
+import { formatVnd } from "@/lib/utils";
+
+const priceToneClasses = {
+  blue: "text-blue-700",
+  emerald: "text-emerald-700",
+  violet: "text-violet-700",
+  rose: "text-rose-700",
+};
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -17,7 +25,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         href="/products"
         className="mb-6 inline-flex items-center text-sm font-medium text-slate-600 hover:text-slate-900"
       >
-        ← Back to products
+        ← Quay lại thư viện website
       </Link>
 
       <div className="grid gap-8 rounded-4xl border border-slate-200 bg-white p-6 shadow-[0_12px_30px_rgba(15,23,42,0.04)] lg:grid-cols-2 lg:p-8">
@@ -46,23 +54,29 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           </h1>
           <div className="mt-5 flex items-center gap-3 text-sm text-slate-600">
             <span>★ {product.rating}</span>
-            <span>({product.reviews} reviews)</span>
+            <span>({product.reviews} đánh giá)</span>
           </div>
 
-          <div className="mt-6 flex items-end gap-3">
-            <span className="text-4xl font-semibold text-slate-900">${product.price}</span>
-            <span className="pb-1 text-sm text-slate-500">Free shipping</span>
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <span className={`text-4xl font-bold ${priceToneClasses[product.priceTone]}`}>
+              {formatVnd(product.price)}
+            </span>
+            {product.comparePrice && (
+              <>
+                <span className="text-base text-slate-400 line-through">
+                  {formatVnd(product.comparePrice)}
+                </span>
+                <span className="rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-600">
+                  Giảm {product.discountPercent}%
+                </span>
+              </>
+            )}
+            <span className="pb-1 text-sm text-slate-500">Bao gồm tư vấn triển khai</span>
           </div>
 
           <p className="mt-6 text-base leading-7 text-slate-600">{product.description}</p>
 
-          <AddToCartButton product={product} />
-          <Link
-            href="/payment"
-            className="mt-3 inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 sm:w-fit"
-          >
-            Buy now
-          </Link>
+          <ProductActions product={product} />
         </div>
       </div>
     </div>

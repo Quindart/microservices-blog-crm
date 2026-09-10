@@ -10,7 +10,7 @@ export type CartItem = {
   price: number;
   quantity: number;
   accent: string;
-  color?: string;
+  plan?: string;
 };
 
 type CartStore = {
@@ -49,8 +49,7 @@ export const useCartStore = create<CartStore>()(
               ? state.items.map((item) => (item.id === id ? { ...item, quantity } : item))
               : state.items.filter((item) => item.id !== id),
         })),
-      removeItem: (id) =>
-        set((state) => ({ items: state.items.filter((item) => item.id !== id) })),
+      removeItem: (id) => set((state) => ({ items: state.items.filter((item) => item.id !== id) })),
       clearCart: () => set({ items: [] }),
     }),
     { name: "author-store-cart" },

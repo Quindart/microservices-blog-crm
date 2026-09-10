@@ -1,0 +1,135 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+a {
+  text-decoration: none;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  animation: marquee 28s linear infinite;
+}
+
+.network-lines {
+  overflow: visible;
+}
+
+.network-lines path {
+  fill: none;
+  stroke: rgba(29, 101, 214, 0.38);
+  stroke-width: 0.35;
+  stroke-dasharray: 1.5 2.4;
+  animation: network-dash 5s linear infinite;
+}
+
+.network-node {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.78), rgba(29, 101, 214, 0.92));
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow:
+    inset 3px 3px 7px rgba(255, 255, 255, 0.65),
+    inset -5px -6px 10px rgba(9, 61, 143, 0.3),
+    0 16px 28px rgba(29, 101, 214, 0.24);
+  text-shadow: 0 2px 4px rgba(9, 61, 143, 0.35);
+  transform-style: preserve-3d;
+  animation: network-pulse 3.8s ease-in-out infinite;
+}
+
+.spring-cursor-enabled,
+.spring-cursor-enabled * {
+  cursor: none !important;
+}
+
+.spring-cursor {
+  position: fixed;
+  z-index: 100;
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: 999px;
+  background: rgba(29, 101, 214, 0.72);
+  box-shadow:
+    0 0 0 6px rgba(29, 101, 214, 0.12),
+    0 8px 24px rgba(29, 101, 214, 0.32);
+  transform: translate(-50%, -50%);
+  mix-blend-mode: multiply;
+}
+
+@media (pointer: coarse) {
+  .spring-cursor {
+    display: none;
+  }
+}
+
+@keyframes network-dash {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+
+@keyframes network-pulse {
+  0%,
+  100% {
+    box-shadow:
+      inset 3px 3px 7px rgba(255, 255, 255, 0.65),
+      inset -5px -6px 10px rgba(9, 61, 143, 0.3),
+      0 16px 28px rgba(29, 101, 214, 0.24);
+  }
+  50% {
+    box-shadow:
+      inset 3px 3px 7px rgba(255, 255, 255, 0.8),
+      inset -5px -6px 10px rgba(9, 61, 143, 0.25),
+      0 20px 38px rgba(29, 101, 214, 0.38);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .marquee-track,
+  .network-lines path,
+  .network-node {
+    animation-play-state: paused;
+  }
+}

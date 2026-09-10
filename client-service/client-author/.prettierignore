@@ -1,0 +1,9 @@
+node_modules
+.next
+out
+dist
+coverage
+public/*.png
+public/*.svg
+public/*.ico
+pnpm-lock.yaml

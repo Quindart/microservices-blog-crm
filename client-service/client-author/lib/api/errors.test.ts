@@ -29,4 +29,14 @@ describe("unwrapResponse", () => {
       unwrapResponse({ response: new Response(null, { status: 204 }) }),
     ).toThrow("API không trả về dữ liệu.");
   });
+
+  it("uses status zero when the request fails before receiving a response", () => {
+    try {
+      unwrapResponse({ error: new TypeError("fetch failed") });
+      expect.unreachable("Expected unwrapResponse to throw");
+    } catch (error) {
+      expect(error).toBeInstanceOf(ApiError);
+      expect((error as ApiError).status).toBe(0);
+    }
+  });
 });

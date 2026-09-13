@@ -12,14 +12,16 @@ export class ApiError extends Error {
 export function unwrapResponse<T>(response: {
   data?: T;
   error?: unknown;
-  response: Response;
+  response?: Response;
 }): T {
-  if (!response.response.ok || response.error !== undefined) {
-    throw new ApiError(response.response.status, "Không thể tải dữ liệu.", response.error);
+  const status = response.response?.status ?? 0;
+
+  if (response.error !== undefined || (response.response && !response.response.ok)) {
+    throw new ApiError(status, "Không thể tải dữ liệu.", response.error);
   }
 
   if (response.data === undefined) {
-    throw new ApiError(response.response.status, "API không trả về dữ liệu.");
+    throw new ApiError(status, "API không trả về dữ liệu.");
   }
 
   return response.data;

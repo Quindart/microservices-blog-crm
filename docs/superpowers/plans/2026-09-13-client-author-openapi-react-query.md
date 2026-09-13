@@ -228,7 +228,7 @@ Merge this script into `package.json`:
 ```json
 {
   "scripts": {
-    "generate:api": "pnpm sync:openapi && openapi-ts -i openapi/api.yml -o generated/api"
+    "generate:api": "pnpm sync:openapi && openapi-ts -i ./openapi/api.yml -o generated/api"
   }
 }
 ```

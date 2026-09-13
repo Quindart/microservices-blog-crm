@@ -9,6 +9,7 @@
     "lint": "eslint",
     "format": "prettier --write .",
     "sync:openapi": "node scripts/sync-openapi.mjs",
+    "generate:api": "pnpm sync:openapi && openapi-ts -i ./openapi/api.yml -o generated/api",
     "test:scripts": "node --test scripts/*.test.mjs",
     "test": "pnpm test:scripts"
   },

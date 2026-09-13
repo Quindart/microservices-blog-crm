@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Suspense } from "react";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { Providers } from "./providers";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -74,15 +75,17 @@ export default function RootLayout({
   return (
     <html lang="vi" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full bg-slate-50 text-slate-900">
-        <div className="flex min-h-screen flex-col">
-          <Suspense fallback={<header className="h-20 border-b border-slate-200 bg-white" />}>
-            <SiteHeader />
-          </Suspense>
-          <main className="flex-1">{children}</main>
-          <Suspense fallback={<footer className="h-24 border-t border-slate-200 bg-white" />}>
-            <SiteFooter />
-          </Suspense>
-        </div>
+        <Providers>
+          <div className="flex min-h-screen flex-col">
+            <Suspense fallback={<header className="h-20 border-b border-slate-200 bg-white" />}>
+              <SiteHeader />
+            </Suspense>
+            <main className="flex-1">{children}</main>
+            <Suspense fallback={<footer className="h-24 border-t border-slate-200 bg-white" />}>
+              <SiteFooter />
+            </Suspense>
+          </div>
+        </Providers>
       </body>
     </html>
   );

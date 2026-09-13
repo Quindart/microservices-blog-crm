@@ -80,7 +80,7 @@ configuration.
 
 ## Runtime Architecture
 
-Next.js rewrites `/backend-api/:path*` to `${API_PROXY_TARGET}/api/:path*`.
+Next.js rewrites `/backend-api/:path*` to `${API_PROXY_TARGET}/:path*`.
 Browser requests therefore use the frontend origin and do not require a backend
 CORS change. A production deployment can point `API_PROXY_TARGET` at a remote
 backend without regenerating the SDK.
@@ -136,14 +136,18 @@ the previous list while the new query is fetching.
 The handwritten data layer is organized by domain rather than by generated
 file type:
 
-- `features/products/api.ts` owns product/category query keys, query options,
-  and `useProducts`, `useProduct`, and `useProductCategories` hooks.
+- `features/products/queries.ts` owns product/category query keys and query
+  options that are safe to import from Server Components.
+- `features/products/hooks.ts` is client-only and owns `useProducts`,
+  `useProduct`, and `useProductCategories` hooks.
 - `features/products/model.ts` maps generated products and categories to the
   complete product view models used by the UI.
-- `features/blogs/api.ts` owns blog/category query keys, query options, and
-  `useBlogs`, `useBlog`, and `useBlogCategories` hooks.
+- `features/blogs/queries.ts` owns blog/category query keys and query options.
+- `features/blogs/hooks.ts` is client-only and owns `useBlogs`, `useBlog`, and
+  `useBlogCategories` hooks.
 - `features/blogs/model.ts` maps generated blog responses to blog view models.
-- `features/landing-pages/api.ts` owns landing query keys, query options, and
+- `features/landing-pages/queries.ts` owns landing query keys and query options.
+- `features/landing-pages/hooks.ts` is client-only and owns
   `useLandingPages` and `useLandingPage` hooks.
 - `features/landing-pages/model.ts` maps landing responses to landing view models.
 
@@ -194,11 +198,9 @@ The implementation adds focused tests for behavior with material failure risk:
 - query-key factories distinguish different filters and reuse the same key for
   server prefetch and client hooks;
 - presentation mappers correctly adapt nested OpenAPI response fields and fill
-  optional display defaults;
-- list screens pass URL filters to hooks and render loading, error, empty, and
-  successful states;
-- detail screens request the route slug and render the not-found state for a
-  generated 404.
+  optional display defaults; and
+- live route smoke checks confirm list filters, detail slugs, and visible
+  loading/error/empty behavior against the running API.
 
 Verification runs API generation against the live Go endpoint, TypeScript type
 checking, ESLint, targeted tests, and a production Next.js build. A local smoke

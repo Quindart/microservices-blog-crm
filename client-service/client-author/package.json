@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:backend": "cd ../../golang-crm && go run ./cmd",
+    "dev:with-api": "node scripts/wait-for-api.mjs && pnpm generate:api && next dev",
+    "dev:fullstack": "concurrently --kill-others --names backend,frontend \"pnpm dev:backend\" \"pnpm dev:with-api\"",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",

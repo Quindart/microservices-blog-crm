@@ -9,7 +9,11 @@ import (
 
 type ProductUseCase struct{ repository out.ProductRepository }
 
-func NewProductUseCase(r out.ProductRepository) ProductUseCase { return ProductUseCase{repository: r} }
+func NewProductUseCase(
+	r out.ProductRepository,
+) ProductUseCase {
+	return ProductUseCase{repository: r}
+}
 func (u ProductUseCase) GetByParams(c context.Context, l, o int) ([]product.Product, error) {
 	return u.repository.GetByParams(c, l, o)
 }

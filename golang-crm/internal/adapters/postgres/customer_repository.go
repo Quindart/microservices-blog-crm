@@ -3,19 +3,11 @@ package postgres
 import (
 	"context"
 
+	"golang-crm/internal/adapters/postgres/models"
 	"golang-crm/internal/domain/customer"
 
 	"gorm.io/gorm"
 )
-
-type customerModel struct {
-	ID    string `gorm:"type:uuid;primaryKey"`
-	Name  string
-	Email string `gorm:"uniqueIndex"`
-	City  string
-}
-
-func (customerModel) TableName() string { return "customers" }
 
 type CustomerRepository struct{ db *gorm.DB }
 
@@ -27,8 +19,11 @@ func (r CustomerRepository) List(ctx context.Context) ([]customer.Customer, erro
 	return r.ListByParams(ctx, 0, 0)
 }
 
-func (r CustomerRepository) ListByParams(ctx context.Context, limit, offset int) ([]customer.Customer, error) {
-	var rows []customerModel
+func (r CustomerRepository) ListByParams(
+	ctx context.Context,
+	limit, offset int,
+) ([]customer.Customer, error) {
+	var rows []models.Customer
 	query := r.db.WithContext(ctx).Order("id")
 	if limit > 0 {
 		query = query.Limit(limit)
@@ -47,7 +42,7 @@ func (r CustomerRepository) ListByParams(ctx context.Context, limit, offset int)
 }
 
 func (r CustomerRepository) GetByID(ctx context.Context, id string) (*customer.Customer, error) {
-	var row customerModel
+	var row models.Customer
 	result := r.db.WithContext(ctx).First(&row, "id = ?", id)
 	if result.Error != nil {
 		return nil, result.Error
@@ -56,16 +51,22 @@ func (r CustomerRepository) GetByID(ctx context.Context, id string) (*customer.C
 	return &item, nil
 }
 
-func (r CustomerRepository) Create(ctx context.Context, item customer.Customer) (*customer.Customer, error) {
-	row := customerModel{ID: item.ID, Name: item.Name, Email: item.Email, City: item.City}
+func (r CustomerRepository) Create(
+	ctx context.Context,
+	item customer.Customer,
+) (*customer.Customer, error) {
+	row := models.Customer{ID: item.ID, Name: item.Name, Email: item.Email, City: item.City}
 	if err := r.db.WithContext(ctx).Create(&row).Error; err != nil {
 		return nil, err
 	}
 	return &item, nil
 }
 
-func (r CustomerRepository) Update(ctx context.Context, item customer.Customer) (*customer.Customer, error) {
-	result := r.db.WithContext(ctx).Model(&customerModel{}).Where("id = ?", item.ID).
+func (r CustomerRepository) Update(
+	ctx context.Context,
+	item customer.Customer,
+) (*customer.Customer, error) {
+	result := r.db.WithContext(ctx).Model(&models.Customer{}).Where("id = ?", item.ID).
 		Updates(map[string]interface{}{"name": item.Name, "email": item.Email, "city": item.City})
 	if result.Error != nil {
 		return nil, result.Error
@@ -77,7 +78,7 @@ func (r CustomerRepository) Update(ctx context.Context, item customer.Customer) 
 }
 
 func (r CustomerRepository) Delete(ctx context.Context, id string) error {
-	result := r.db.WithContext(ctx).Delete(&customerModel{}, "id = ?", id)
+	result := r.db.WithContext(ctx).Delete(&models.Customer{}, "id = ?", id)
 	if result.Error != nil {
 		return result.Error
 	}

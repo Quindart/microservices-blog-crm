@@ -1,6 +1,6 @@
-# Go CRM Service
+# Author Storefront Backend
 
-A CRM backend built with Go, Echo, GORM, and PostgreSQL. The service provides customer, product, and order APIs and exposes OpenAPI/Swagger documentation.
+Go/Echo/GORM backend matching `product-backend-schema.md`. It serves the author storefront's products, landing pages, blogs, contact form, guest cart and checkout APIs.
 
 ## Local setup
 
@@ -14,7 +14,7 @@ DB_HOST=localhost
 DB_PORT=5433
 DB_USERNAME=user_b
 DB_PASSWORD=password_b
-DB_NAME=crm_db
+DB_NAME=author_storefront
 ```
 
 Start the service:
@@ -32,38 +32,43 @@ make test
 make run
 ```
 
-## API and Swagger
+## API and OpenAPI
 
-| URL | Purpose |
-|---|---|
-| `GET /health` | Health check |
-| `GET /api/v1/customers` | List customers |
-| `POST /api/v1/customers` | Create a customer |
-| `GET /api/v1/customers/{id}` | Get a customer by UUID |
-| `PUT /api/v1/customers/{id}` | Update a customer |
-| `DELETE /api/v1/customers/{id}` | Delete a customer |
-| `GET /api/v1/products` | List products; supports `limit` and `offset` |
-| `GET /api/v1/products/{id}` | Get a product by ID |
-| `GET /api/v1/orders` | List orders; supports `limit` and `offset` |
-| `GET /api/v1/orders/{id}` | Get an order by ID |
-| `GET /api/v1/customers/{customerId}/orders` | List a customer's orders |
+| URL                                     | Purpose                      |
+| --------------------------------------- | ---------------------------- |
+| `GET /health`                           | Health check                 |
+| `GET /api/products`                     | Product listing/filtering    |
+| `GET /api/products/{slug}`              | Product detail with variants |
+| `GET /api/landing-pages`                | Landing page listing         |
+| `GET /api/blogs`                        | Blog listing/filtering       |
+| `POST /api/contacts`                    | Store contact form lead      |
+| `GET/POST /api/cart`                    | Read cart / add item         |
+| `PATCH/DELETE /api/cart/items/{itemId}` | Change cart                  |
+| `POST /api/orders`                      | Transactional checkout       |
 
 Swagger UI: <http://localhost:8080/docs>
 
 - OpenAPI JSON: <http://localhost:8080/swagger.json>
 - OpenAPI YAML: <http://localhost:8080/api.yml>
 
-Create a customer:
-
-```bash
-curl -X POST http://localhost:8080/api/v1/customers \
-  -H 'Content-Type: application/json' \
-  -d '{"name":"Alice Nguyen","email":"alice@example.com","city":"Hanoi"}'
-```
+The complete contract is in [`api.yml`](api.yml). Guest carts use `X-Session-ID`; when absent the server creates an HttpOnly `session_id` cookie.
 
 ## Database schema
 
-The service uses the `customers`, `products`, `orders`, and `order_details` tables. Customer IDs are UUIDs; product and order IDs are auto-incrementing integers (`BIGSERIAL`).
+The storefront schema is managed by the SQL script at
+`../client-service/client-author/database/seed.sql`. The Go service only
+connects to the already-provisioned schema at startup. Checkout uses
+`store_orders` and `store_order_items` so it can coexist with legacy CRM order tables.
+Checkout snapshots the authoritative product prices into the order items and
+decrements stock atomically.
+
+## Work order
+
+1. Database: storefront persistence models, SQL schema and isolated checkout tables.
+2. Logic: bounded-context use cases, repositories, cart session and transactional checkout.
+3. API: Echo routes and `api.yml` matching the frontend/schema response shapes.
+
+The legacy customer/product/order adapters remain in the tree temporarily only to keep the migration reversible; they are no longer wired into `cmd/main.go` or exposed as routes.
 
 ## Hexagonal architecture
 
@@ -92,8 +97,15 @@ internal/application/ports/in/     # Inbound ports
 internal/application/ports/out/    # Outbound ports
 internal/application/usecase/      # Application services
 internal/adapters/http/            # Echo routes and handlers
-internal/adapters/postgres/        # GORM repositories and DB adapter
+internal/adapters/postgres/        # PostgreSQL repositories and DB adapter
+internal/adapters/postgres/models/ # Persistence-only GORM models
 ```
+
+Storefront code is split into the `catalog`, `landing`, `blog`, `contact`, `cart`
+and `checkout` contexts. Each context owns its domain types, inbound service
+port, outbound repository port, use case and PostgreSQL repository. The models
+under `adapters/postgres/models` are database records only; they are mapped to
+domain types at the adapter boundary and never cross into the application core.
 
 ### Request flow
 

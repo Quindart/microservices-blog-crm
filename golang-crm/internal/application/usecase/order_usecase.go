@@ -21,6 +21,9 @@ func (u OrderUseCase) GetByID(ctx context.Context, id string) (*order.Order, err
 	return u.orderRepository.GetByID(ctx, id)
 }
 
-func (u OrderUseCase) GetByCustomerID(ctx context.Context, customerID string) ([]order.Order, error) {
+func (u OrderUseCase) GetByCustomerID(
+	ctx context.Context,
+	customerID string,
+) ([]order.Order, error) {
 	return u.orderRepository.GetByCustomerID(ctx, customerID)
 }

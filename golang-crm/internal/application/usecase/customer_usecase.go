@@ -17,7 +17,10 @@ func (u CustomerUseCase) List(ctx context.Context) ([]customer.Customer, error) 
 	return u.repository.List(ctx)
 }
 
-func (u CustomerUseCase) ListByParams(ctx context.Context, limit, offset int) ([]customer.Customer, error) {
+func (u CustomerUseCase) ListByParams(
+	ctx context.Context,
+	limit, offset int,
+) ([]customer.Customer, error) {
 	return u.repository.ListByParams(ctx, limit, offset)
 }
 
@@ -25,11 +28,17 @@ func (u CustomerUseCase) GetByID(ctx context.Context, id string) (*customer.Cust
 	return u.repository.GetByID(ctx, id)
 }
 
-func (u CustomerUseCase) Create(ctx context.Context, item customer.Customer) (*customer.Customer, error) {
+func (u CustomerUseCase) Create(
+	ctx context.Context,
+	item customer.Customer,
+) (*customer.Customer, error) {
 	return u.repository.Create(ctx, item)
 }
 
-func (u CustomerUseCase) Update(ctx context.Context, item customer.Customer) (*customer.Customer, error) {
+func (u CustomerUseCase) Update(
+	ctx context.Context,
+	item customer.Customer,
+) (*customer.Customer, error) {
 	return u.repository.Update(ctx, item)
 }
 

@@ -16,6 +16,20 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Local storefront seed
+
+Start the Go backend once so GORM creates the storefront tables, then run the
+idempotent seed for the author storefront:
+
+```bash
+PGPASSWORD=password_b psql -h localhost -p 5433 -U user_b -d author_storefront \
+  -f database/seed.sql
+```
+
+The seed contains the products, variants, media, landing pages, blog content,
+and contact records used by the storefront flows. Its stable IDs and slugs make
+it safe to run repeatedly in a local database.
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.

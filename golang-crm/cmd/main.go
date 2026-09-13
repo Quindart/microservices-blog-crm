@@ -26,10 +26,14 @@ func main() {
 	}
 	defer postgres.CloseDatabase(db)
 
-	server := http.NewServer(cfg.Port,
-		usecase.NewCustomerUseCase(postgres.NewCustomerRepository(db)),
-		usecase.NewOrderUseCase(postgres.NewOrderRepository(db)),
-		usecase.NewProductUseCase(postgres.NewProductRepository(db)),
+	server := http.NewServer(
+		cfg.Port,
+		usecase.NewCatalogUseCase(postgres.NewCatalogRepository(db)),
+		usecase.NewLandingUseCase(postgres.NewLandingRepository(db)),
+		usecase.NewBlogUseCase(postgres.NewBlogRepository(db)),
+		usecase.NewContactUseCase(postgres.NewContactRepository(db)),
+		usecase.NewCartUseCase(postgres.NewCartRepository(db)),
+		usecase.NewCheckoutUseCase(postgres.NewCheckoutRepository(db)),
 	)
 
 	log.Printf("CRM API listening on :%s", cfg.Port)

@@ -1,71 +1,658 @@
 openapi: 3.0.3
-info: {title: CRM Service API, description: Customer CRUD API., version: 1.0.0}
-servers: [{url: http://localhost:8080}]
+info:
+  title: Author Storefront API
+  version: 2.0.0
+  description: Product, content, contact, cart and checkout API for the author storefront.
+servers:
+  - url: http://localhost:8080
 paths:
-  /api/v1/customers:
+  /health:
     get:
-      summary: List customers
-      operationId: listCustomers
-      parameters: [{name: limit, in: query, schema: {type: integer, minimum: 1}}, {name: offset, in: query, schema: {type: integer, minimum: 0}}]
-      responses: {'200': {description: Success, content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/Customer'}}}}}, '400': {$ref: '#/components/responses/BadRequest'}, '500': {$ref: '#/components/responses/ServerError'}}
+      operationId: health
+      responses: { "200": { description: OK } }
+  /api/products:
+    get:
+      operationId: listProducts
+      parameters:
+        - { $ref: "#/components/parameters/Page" }
+        - { $ref: "#/components/parameters/Limit" }
+        - { name: category, in: query, schema: { type: string } }
+        - { name: search, in: query, schema: { type: string } }
+        - {
+            name: minPrice,
+            in: query,
+            schema: { type: number, format: double },
+          }
+        - {
+            name: maxPrice,
+            in: query,
+            schema: { type: number, format: double },
+          }
+        - {
+            name: sort,
+            in: query,
+            schema:
+              {
+                type: string,
+                enum: [newest, price_asc, price_desc, rating, popular],
+              },
+          }
+      responses:
+        "200":
+          {
+            description: Product list,
+            content:
+              {
+                application/json:
+                  {
+                    schema: { $ref: "#/components/schemas/PaginatedProducts" },
+                  },
+              },
+          }
+        "400": { $ref: "#/components/responses/BadRequest" }
+  /api/products/{slug}:
+    get:
+      operationId: getProduct
+      parameters: [{ $ref: "#/components/parameters/Slug" }]
+      responses:
+        "200":
+          {
+            description: Product detail,
+            content:
+              {
+                application/json:
+                  { schema: { $ref: "#/components/schemas/Product" } },
+              },
+          }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/categories:
+    get:
+      operationId: listCategories
+      responses:
+        "200":
+          {
+            description: Active product categories,
+            content:
+              {
+                application/json:
+                  {
+                    schema:
+                      { type: array, items: { $ref: "#/components/schemas/Category" } },
+                  },
+              },
+          }
+  /api/landing-pages:
+    get:
+      operationId: listLandingPages
+      parameters:
+        [
+          { $ref: "#/components/parameters/Page" },
+          { $ref: "#/components/parameters/Limit" },
+        ]
+      responses:
+        "200":
+          {
+            description: Landing page list,
+            content:
+              {
+                application/json:
+                  {
+                    schema:
+                      { $ref: "#/components/schemas/PaginatedLandingPages" },
+                  },
+              },
+          }
+  /api/landing-pages/{slug}:
+    get:
+      operationId: getLandingPage
+      parameters: [{ $ref: "#/components/parameters/Slug" }]
+      responses:
+        "200":
+          {
+            description: Landing page detail,
+            content:
+              {
+                application/json:
+                  { schema: { $ref: "#/components/schemas/LandingPage" } },
+              },
+          }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/blogs:
+    get:
+      operationId: listBlogs
+      parameters:
+        - { $ref: "#/components/parameters/Page" }
+        - { $ref: "#/components/parameters/Limit" }
+        - { name: category, in: query, schema: { type: string } }
+        - { name: tag, in: query, schema: { type: string } }
+        - { name: author, in: query, schema: { type: string } }
+        - { name: search, in: query, schema: { type: string } }
+        - { name: sort, in: query, schema: { type: string, enum: [latest] } }
+      responses:
+        "200":
+          {
+            description: Blog list,
+            content:
+              {
+                application/json:
+                  { schema: { $ref: "#/components/schemas/PaginatedBlogs" } },
+              },
+          }
+  /api/blogs/{slug}:
+    get:
+      operationId: getBlog
+      parameters: [{ $ref: "#/components/parameters/Slug" }]
+      responses:
+        "200":
+          {
+            description: Blog detail,
+            content:
+              {
+                application/json:
+                  { schema: { $ref: "#/components/schemas/Blog" } },
+              },
+          }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/blog-categories:
+    get:
+      operationId: listBlogCategories
+      responses:
+        "200":
+          {
+            description: Active blog categories,
+            content:
+              {
+                application/json:
+                  {
+                    schema:
+                      { type: array, items: { $ref: "#/components/schemas/Category" } },
+                  },
+              },
+          }
+  /api/contacts:
+    get:
+      operationId: listContacts
+      parameters:
+        [
+          { $ref: "#/components/parameters/Page" },
+          { $ref: "#/components/parameters/Limit" },
+        ]
+      responses:
+        {
+          "200":
+            {
+              description: Contact list,
+              content:
+                {
+                  application/json:
+                    {
+                      schema:
+                        { $ref: "#/components/schemas/PaginatedContacts" },
+                    },
+                },
+            },
+        }
     post:
-      summary: Create customer
-      operationId: createCustomer
-      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/CustomerRequest'}}}}
-      responses: {'201': {description: Created, content: {application/json: {schema: {$ref: '#/components/schemas/Customer'}}}}, '400': {$ref: '#/components/responses/BadRequest'}, '500': {$ref: '#/components/responses/ServerError'}}
-  /api/v1/customers/{id}:
-    parameters: [{name: id, in: path, required: true, schema: {type: string, format: uuid}}]
+      operationId: createContact
+      requestBody:
+        {
+          required: true,
+          content:
+            {
+              application/json:
+                { schema: { $ref: "#/components/schemas/ContactRequest" } },
+            },
+        }
+      responses:
+        "201":
+          {
+            description: Created,
+            content:
+              {
+                application/json:
+                  { schema: { $ref: "#/components/schemas/Contact" } },
+              },
+          }
+        "400": { $ref: "#/components/responses/BadRequest" }
+  /api/cart:
     get:
-      summary: Get customer by ID
-      operationId: getCustomerByID
-      responses: {'200': {description: Success, content: {application/json: {schema: {$ref: '#/components/schemas/Customer'}}}}, '404': {$ref: '#/components/responses/NotFound'}, '500': {$ref: '#/components/responses/ServerError'}}
-    put:
-      summary: Update customer by ID
-      operationId: updateCustomer
-      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/CustomerRequest'}}}}
-      responses: {'200': {description: Updated, content: {application/json: {schema: {$ref: '#/components/schemas/Customer'}}}}, '400': {$ref: '#/components/responses/BadRequest'}, '404': {$ref: '#/components/responses/NotFound'}, '500': {$ref: '#/components/responses/ServerError'}}
+      operationId: getCart
+      parameters: [{ $ref: "#/components/parameters/Session" }]
+      responses:
+        {
+          "200":
+            {
+              description: Cart,
+              content:
+                {
+                  application/json:
+                    { schema: { $ref: "#/components/schemas/Cart" } },
+                },
+            },
+        }
+  /api/cart/items:
+    post:
+      operationId: addCartItem
+      parameters: [{ $ref: "#/components/parameters/Session" }]
+      requestBody:
+        {
+          required: true,
+          content:
+            {
+              application/json:
+                { schema: { $ref: "#/components/schemas/CartItemRequest" } },
+            },
+        }
+      responses:
+        {
+          "200":
+            {
+              description: Updated cart,
+              content:
+                {
+                  application/json:
+                    { schema: { $ref: "#/components/schemas/Cart" } },
+                },
+            },
+          "400": { $ref: "#/components/responses/BadRequest" },
+        }
+  /api/cart/items/{itemId}:
+    parameters:
+      [
+        { name: itemId, in: path, required: true, schema: { type: string } },
+        { $ref: "#/components/parameters/Session" },
+      ]
+    patch:
+      operationId: updateCartItem
+      requestBody:
+        {
+          required: true,
+          content:
+            {
+              application/json:
+                {
+                  schema: { $ref: "#/components/schemas/CartQuantityRequest" },
+                },
+            },
+        }
+      responses:
+        {
+          "200":
+            {
+              description: Updated cart,
+              content:
+                {
+                  application/json:
+                    { schema: { $ref: "#/components/schemas/Cart" } },
+                },
+            },
+          "400": { $ref: "#/components/responses/BadRequest" },
+        }
     delete:
-      summary: Delete customer by ID
-      operationId: deleteCustomer
-      responses: {'204': {description: Deleted}, '404': {$ref: '#/components/responses/NotFound'}, '500': {$ref: '#/components/responses/ServerError'}}
-  /api/v1/orders:
+      operationId: deleteCartItem
+      responses: { "204": { description: Deleted } }
+  /api/orders:
+    post:
+      operationId: createOrder
+      parameters: [{ $ref: "#/components/parameters/Session" }]
+      requestBody:
+        {
+          required: true,
+          content:
+            {
+              application/json:
+                { schema: { $ref: "#/components/schemas/OrderRequest" } },
+            },
+        }
+      responses:
+        "201":
+          {
+            description: Pending order,
+            content:
+              {
+                application/json:
+                  { schema: { $ref: "#/components/schemas/Order" } },
+              },
+          }
+        "400": { $ref: "#/components/responses/BadRequest" }
+  /api/orders/{orderNumber}:
     get:
-      summary: Get orders by parameters
-      operationId: getOrderByParams
-      parameters: [{name: limit, in: query, schema: {type: integer, minimum: 1}}, {name: offset, in: query, schema: {type: integer, minimum: 0}}]
-      responses: {'200': {description: Success, content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/Order'}}}}}, '400': {$ref: '#/components/responses/BadRequest'}, '500': {$ref: '#/components/responses/ServerError'}}
-  /api/v1/customers/{customerId}/orders:
-    get:
-      summary: Get orders by customer ID
-      operationId: getOrdersByCustomer
-      parameters: [{name: customerId, in: path, required: true, schema: {type: string, format: uuid}}]
-      responses: {'200': {description: Success, content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/Order'}}}}}, '500': {$ref: '#/components/responses/ServerError'}}
-  /api/v1/orders/{id}:
-    get:
-      summary: Get order by ID
-      operationId: getOrderById
-      parameters: [{name: id, in: path, required: true, schema: {type: string}}]
-      responses: {'200': {description: Success, content: {application/json: {schema: {$ref: '#/components/schemas/Order'}}}}, '404': {$ref: '#/components/responses/NotFound'}, '500': {$ref: '#/components/responses/ServerError'}}
-  /api/v1/products:
-    get:
-      summary: Get products by parameters
-      operationId: getProductByParams
-      parameters: [{name: limit, in: query, schema: {type: integer, minimum: 1}}, {name: offset, in: query, schema: {type: integer, minimum: 0}}]
-      responses: {'200': {description: Success, content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/Product'}}}}}, '400': {$ref: '#/components/responses/BadRequest'}, '500': {$ref: '#/components/responses/ServerError'}}
-  /api/v1/products/{id}:
-    get:
-      summary: Get product by ID
-      operationId: getProductById
-      parameters: [{name: id, in: path, required: true, schema: {type: integer, format: int64}}]
-      responses: {'200': {description: Success, content: {application/json: {schema: {$ref: '#/components/schemas/Product'}}}}, '404': {$ref: '#/components/responses/NotFound'}, '500': {$ref: '#/components/responses/ServerError'}}
+      operationId: getOrder
+      parameters:
+        [
+          {
+            name: orderNumber,
+            in: path,
+            required: true,
+            schema: { type: string },
+          },
+        ]
+      responses:
+        "200":
+          {
+            description: Order,
+            content:
+              {
+                application/json:
+                  { schema: { $ref: "#/components/schemas/Order" } },
+              },
+          }
+        "404": { $ref: "#/components/responses/NotFound" }
 components:
+  parameters:
+    Page:
+      {
+        name: page,
+        in: query,
+        schema: { type: integer, minimum: 1, default: 1 },
+      }
+    Limit:
+      {
+        name: limit,
+        in: query,
+        schema: { type: integer, minimum: 1, maximum: 100, default: 12 },
+      }
+    Slug: { name: slug, in: path, required: true, schema: { type: string } }
+    Session:
+      {
+        name: X-Session-ID,
+        in: header,
+        required: false,
+        schema: { type: string },
+      }
   schemas:
-    Customer: {type: object, required: [id, name, email], properties: {id: {type: string, format: uuid}, name: {type: string}, email: {type: string, format: email}, city: {type: string, nullable: true}}}
-    CustomerRequest: {type: object, required: [name, email], properties: {name: {type: string}, email: {type: string, format: email}, city: {type: string, nullable: true}}}
-    Order: {type: object, properties: {id: {type: string}, customerId: {type: string}, status: {type: string}, total: {type: number, format: double}, items: {type: array, items: {type: object}}}}
-    Product: {type: object, properties: {id: {type: integer, format: int64}, name: {type: string}, category: {type: string}, unitPrice: {type: number}, cost: {type: number}, discontinued: {type: boolean}, stock: {type: integer}}}
-    Error: {type: object, required: [error], properties: {error: {type: string}}}
+    Price:
+      {
+        type: object,
+        required: [amount, currency],
+        properties:
+          {
+            amount: { type: number, format: double },
+            currency: { type: string, example: VND },
+          },
+      }
+    Category:
+      {
+        type: object,
+        properties:
+          {
+            id: { type: string },
+            name: { type: string },
+            slug: { type: string },
+          },
+      }
+    Rating:
+      {
+        type: object,
+        properties:
+          {
+            average: { type: number, format: double },
+            count: { type: integer },
+          },
+      }
+    Media:
+      {
+        type: object,
+        properties:
+          {
+            url: { type: string, format: uri },
+            alt: { type: string },
+            isPrimary: { type: boolean },
+          },
+      }
+    Variant:
+      {
+        type: object,
+        properties:
+          {
+            id: { type: string },
+            sku: { type: string },
+            name: { type: string },
+            price: { $ref: "#/components/schemas/Price" },
+            stock: { type: integer },
+            available: { type: boolean },
+          },
+      }
+    Product:
+      {
+        type: object,
+        properties:
+          {
+            id: { type: string },
+            slug: { type: string },
+            name: { type: string },
+            category: { $ref: "#/components/schemas/Category" },
+            shortDescription: { type: string },
+            description: { type: string },
+            price: { $ref: "#/components/schemas/Price" },
+            rating: { $ref: "#/components/schemas/Rating" },
+            badge: { type: string },
+            highlight: { type: string },
+            freeShipping: { type: boolean },
+            thumbnail: { $ref: "#/components/schemas/Media" },
+            media:
+              { type: array, items: { $ref: "#/components/schemas/Media" } },
+            variants:
+              { type: array, items: { $ref: "#/components/schemas/Variant" } },
+            inStock: { type: boolean },
+          },
+      }
+    LandingPage:
+      {
+        type: object,
+        properties:
+          {
+            id: { type: string },
+            slug: { type: string },
+            title: { type: string },
+            category: { type: string },
+            description: { type: string },
+            price: { $ref: "#/components/schemas/Price" },
+            thumbnailUrl: { type: string, format: uri },
+            features: { type: array, items: { type: string } },
+          },
+      }
+    Blog:
+      {
+        type: object,
+        properties:
+          {
+            slug: { type: string },
+            title: { type: string },
+            excerpt: { type: string },
+            content: { type: string },
+            contentFormat: { type: string, enum: [MARKDOWN, RICH_TEXT_JSON] },
+            category: { $ref: "#/components/schemas/Category" },
+            author: { type: object },
+            publishedAt: { type: string, format: date-time },
+            readTime: { type: integer },
+            coverImageUrl: { type: string, format: uri },
+            tags: { type: array, items: { type: string } },
+          },
+      }
+    ContactRequest:
+      {
+        type: object,
+        required: [fullName, email, phone],
+        properties:
+          {
+            fullName: { type: string },
+            email: { type: string, format: email },
+            phone: { type: string },
+            message: { type: string },
+            source: { type: string },
+          },
+      }
+    Contact:
+      {
+        allOf:
+          [
+            { $ref: "#/components/schemas/ContactRequest" },
+            {
+              type: object,
+              properties:
+                {
+                  id: { type: string },
+                  status:
+                    { type: string, enum: [NEW, IN_PROGRESS, RESOLVED, SPAM] },
+                  createdAt: { type: string, format: date-time },
+                },
+            },
+          ],
+      }
+    CartItemRequest:
+      {
+        type: object,
+        required: [variantId, quantity],
+        properties:
+          {
+            variantId: { type: string },
+            quantity: { type: integer, minimum: 1 },
+          },
+      }
+    CartQuantityRequest:
+      {
+        type: object,
+        required: [quantity],
+        properties: { quantity: { type: integer, minimum: 1 } },
+      }
+    Cart:
+      {
+        type: object,
+        properties:
+          {
+            items: { type: array, items: { type: object } },
+            summary:
+              {
+                type: object,
+                properties:
+                  {
+                    subtotal: { type: number },
+                    shippingFee: { type: number },
+                    total: { type: number },
+                    currency: { type: string },
+                  },
+              },
+          },
+      }
+    OrderRequest:
+      {
+        type: object,
+        required: [customerName, customerEmail, shippingAddress],
+        properties:
+          {
+            customerName: { type: string },
+            customerEmail: { type: string, format: email },
+            shippingAddress:
+              {
+                type: object,
+                required: [line1, city, country],
+                properties:
+                  {
+                    line1: { type: string },
+                    city: { type: string },
+                    state: { type: string },
+                    postalCode: { type: string },
+                    country: { type: string },
+                  },
+              },
+          },
+      }
+    Order:
+      {
+        type: object,
+        properties:
+          {
+            id: { type: string },
+            orderNumber: { type: string },
+            status: { type: string },
+            subtotal: { type: number },
+            shippingFee: { type: number },
+            discount: { type: number },
+            total: { type: number },
+            currency: { type: string },
+            customerName: { type: string },
+            customerEmail: { type: string },
+            items: { type: array, items: { type: object } },
+            createdAt: { type: string, format: date-time },
+          },
+      }
+    Pagination:
+      {
+        type: object,
+        properties:
+          {
+            page: { type: integer },
+            limit: { type: integer },
+            total: { type: integer },
+            totalPages: { type: integer },
+          },
+      }
+    PaginatedProducts:
+      {
+        type: object,
+        properties:
+          {
+            items:
+              { type: array, items: { $ref: "#/components/schemas/Product" } },
+            pagination: { $ref: "#/components/schemas/Pagination" },
+          },
+      }
+    PaginatedLandingPages:
+      {
+        type: object,
+        properties:
+          {
+            items:
+              {
+                type: array,
+                items: { $ref: "#/components/schemas/LandingPage" },
+              },
+            pagination: { $ref: "#/components/schemas/Pagination" },
+          },
+      }
+    PaginatedBlogs:
+      {
+        type: object,
+        properties:
+          {
+            items:
+              { type: array, items: { $ref: "#/components/schemas/Blog" } },
+            pagination: { $ref: "#/components/schemas/Pagination" },
+          },
+      }
+    PaginatedContacts:
+      {
+        type: object,
+        properties:
+          {
+            items:
+              { type: array, items: { $ref: "#/components/schemas/Contact" } },
+            pagination: { $ref: "#/components/schemas/Pagination" },
+          },
+      }
+    Error:
+      {
+        type: object,
+        required: [error],
+        properties: { error: { type: string } },
+      }
   responses:
-    BadRequest: {description: Invalid request, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
-    NotFound: {description: Customer not found, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
-    ServerError: {description: Internal server error, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
+    BadRequest:
+      {
+        description: Invalid request,
+        content:
+          {
+            application/json:
+              { schema: { $ref: "#/components/schemas/Error" } },
+          },
+      }
+    NotFound:
+      {
+        description: Resource not found,
+        content:
+          {
+            application/json:
+              { schema: { $ref: "#/components/schemas/Error" } },
+          },
+      }

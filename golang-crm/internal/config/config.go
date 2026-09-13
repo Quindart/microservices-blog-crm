@@ -27,5 +27,14 @@ func Load() (Config, error) {
 			return Config{}, fmt.Errorf("missing required environment variable %s", k)
 		}
 	}
-	return Config{port, DatabaseConfig{os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_USERNAME"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_NAME")}}, nil
+	return Config{
+		port,
+		DatabaseConfig{
+			os.Getenv("DB_HOST"),
+			os.Getenv("DB_PORT"),
+			os.Getenv("DB_USERNAME"),
+			os.Getenv("DB_PASSWORD"),
+			os.Getenv("DB_NAME"),
+		},
+	}, nil
 }

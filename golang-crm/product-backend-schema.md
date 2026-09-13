@@ -257,7 +257,11 @@ Response cho listing:
       "description": "A premium storefront for luxury campaigns and seasonal launches.",
       "price": { "amount": 390, "currency": "USD" },
       "thumbnailUrl": "https://cdn.example.com/luxury-brand.webp",
-      "features": ["Conversion-first blocks", "High-end product showcase", "Checkout UI ready"]
+      "features": [
+        "Conversion-first blocks",
+        "High-end product showcase",
+        "Checkout UI ready"
+      ]
     }
   ],
   "pagination": {

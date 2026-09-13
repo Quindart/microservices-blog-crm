@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { useProductCategories, useProducts } from "@/features/products/hooks";
+import { buildProductSearchParams } from "@/features/products/filters";
 import type { ProductFilters, ProductViewModel } from "@/features/products/model";
 import { formatVnd } from "@/lib/utils";
 
@@ -77,20 +78,12 @@ export function ProductsScreen({ filters }: { filters: ProductFilters }) {
   const categoriesQuery = useProductCategories();
 
   const updateFilters = useCallback(
-    (values: { search?: string; category?: string; sort?: ProductFilters["sort"] }) => {
-      const params = new URLSearchParams();
-      const search = values.search ?? filters.search;
-      const category = values.category ?? filters.category;
-      const sort = values.sort ?? filters.sort;
-
-      if (search) params.set("q", search);
-      if (category) params.set("category", category);
-      if (sort) params.set("sort", sort);
-
+    (nextFilters: ProductFilters) => {
+      const params = buildProductSearchParams(nextFilters);
       const query = params.toString();
       router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
     },
-    [filters, pathname, router],
+    [pathname, router],
   );
 
   const products = productsQuery.data?.items ?? [];
@@ -137,7 +130,10 @@ export function ProductsScreen({ filters }: { filters: ProductFilters }) {
             onSubmit={(event) => {
               event.preventDefault();
               const data = new FormData(event.currentTarget);
-              updateFilters({ search: String(data.get("q") ?? "").trim() || undefined });
+              updateFilters({
+                ...filters,
+                search: String(data.get("q") ?? "").trim() || undefined,
+              });
             }}
           >
             <input
@@ -154,7 +150,9 @@ export function ProductsScreen({ filters }: { filters: ProductFilters }) {
 
           <select
             value={filters.category ?? ""}
-            onChange={(event) => updateFilters({ category: event.target.value || undefined })}
+            onChange={(event) =>
+              updateFilters({ ...filters, category: event.target.value || undefined })
+            }
             className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm"
             aria-label="Lọc sản phẩm theo danh mục"
           >
@@ -169,7 +167,10 @@ export function ProductsScreen({ filters }: { filters: ProductFilters }) {
           <select
             value={filters.sort ?? ""}
             onChange={(event) =>
-              updateFilters({ sort: (event.target.value || undefined) as ProductFilters["sort"] })
+              updateFilters({
+                ...filters,
+                sort: (event.target.value || undefined) as ProductFilters["sort"],
+              })
             }
             className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm"
             aria-label="Sắp xếp sản phẩm"

@@ -6,11 +6,12 @@ import { animated, useSpring } from "@react-spring/web";
 import { motion, type Variants } from "framer-motion";
 import { Suspense } from "react";
 import { useEffect, useRef, useState } from "react";
-import { useScroll, useTransform } from "framer-motion";
+import { useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { IconType } from "react-icons";
+import { getServiceNumberMotion } from "@/features/home/service-number-motion";
 import {
   FaEnvelope,
   FaFacebookF,
@@ -321,6 +322,8 @@ function SpringCursor() {
 }
 
 function HomeContent() {
+  const reducedMotion = Boolean(useReducedMotion());
+
   return (
     <main className="overflow-hidden bg-[#f5f5f2] text-[#171717]">
       <SpringCursor />
@@ -486,16 +489,40 @@ function HomeContent() {
             </div>
           </Reveal>
           <div className="grid border-t border-white/15 md:grid-cols-3">
-            {services.map((service, index) => (
-              <Reveal
-                key={service.number}
-                className={`border-b border-white/15 py-8 md:border-b-0 md:py-10 ${index > 0 ? "md:border-l md:pl-8" : "md:pr-8"}`}
-              >
-                <span className="text-xs text-[#70a6ff]">{service.number}</span>
-                <h3 className="mt-14 text-2xl font-medium tracking-[-0.04em]">{service.title}</h3>
-                <p className="mt-4 max-w-xs text-sm leading-6 text-white/50">{service.text}</p>
-              </Reveal>
-            ))}
+            {services.map((service, index) => {
+              const numberMotion = getServiceNumberMotion(index, reducedMotion);
+
+              return (
+                <Reveal
+                  key={service.number}
+                  className={`border-b border-white/15 py-8 md:border-b-0 md:py-10 ${index > 0 ? "md:border-l md:pl-8" : "md:pr-8"}`}
+                >
+                  <motion.div
+                    className="h-full"
+                    initial="initial"
+                    whileInView="visible"
+                    whileHover="hover"
+                    viewport={{ once: true, amount: 0.65 }}
+                  >
+                    <motion.span
+                      className="inline-block origin-left text-4xl font-medium leading-none tracking-[-0.06em] text-[#70a6ff] sm:text-5xl"
+                      variants={{
+                        initial: numberMotion.initial,
+                        visible: numberMotion.visible,
+                        hover: numberMotion.hover,
+                      }}
+                      transition={numberMotion.transition}
+                    >
+                      {service.number}
+                    </motion.span>
+                    <h3 className="mt-12 text-2xl font-medium tracking-[-0.04em]">
+                      {service.title}
+                    </h3>
+                    <p className="mt-4 max-w-xs text-sm leading-6 text-white/50">{service.text}</p>
+                  </motion.div>
+                </Reveal>
+              );
+            })}
           </div>
         </div>
         <WaveDivider fill="#f5f5f2" />
